@@ -4,7 +4,7 @@
 // ---------------------------------------------------------------- identidad (compartida, solo A)
 export const site = {
   name: 'Michel Poma',
-  email: 'michelpoma457@gmail.com',
+  email: 'hello@michelpoma.dev',
   city: 'Lima, Perú',
   tz: 'America/Lima', // zona horaria IANA editable
   role: 'Full Stack Engineer · Aybar Corp',
