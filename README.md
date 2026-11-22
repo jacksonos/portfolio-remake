@@ -43,3 +43,10 @@ DESIGN.md             decisiones de diseño
 - El copy vive en `src/content.ts`.
 - `DESIGN.md` documenta las decisiones de diseño.
 - `public/portrait.png` y `public/og.png` son el retrato del titular.
+
+## Despliegue
+
+- Cloudflare Workers con static assets, conectado a este repo: build `npm run build`, salida `dist/`.
+- Dominio: https://michelpoma.dev (sin www; www redirige al apex desde el panel de Cloudflare).
+- `wrangler.jsonc` define los assets y `not_found_handling: 404-page` (sin SPA: el sitio no tiene rutas).
+- `public/_headers` fija cabeceras de seguridad, caché de `/assets/*` y `noindex` en `*.workers.dev`.
