@@ -77,6 +77,14 @@ Contenedor y margen seguro (escritorio): `--edge = max(5vw, (100vw - 1480px) / 2
 - Hilo: lineal en el scroll del pin, completo a 0,15 vh del final. La disolución del retrato y el cierre se derivan de px (`dissolve` en vh; el cierre sigue anclado a la parte superior de `Closing`). El foco en 'Aceptar' viaja al inicio de la pausa de la estación 5.
 - Móvil (<768px) y movimiento reducido: sin pin ni este ritmo.
 
+## Móvil: animaciones por scroll
+- Solo `(max-width: 767px) and (prefers-reduced-motion: no-preference)` (bloque propio en `Fly.tsx`). Con movimiento reducido, en cualquier ancho, todo queda estático (fotograma final, sin scrubs); escritorio no cambia. La ancla `dissolve` se registra en ambos casos.
+- Sin pin. Todo es ScrollTrigger con `scrub`: atado al scroll, reversible, nunca temporizado ni en bucle; solo opacity/transform/stroke.
+- A. Revelado por estación: meta, título, lección y texto (o partes) entran escalonados (opacidad + 18 px), `top 80%` a `top 35%` de cada `.st`. gsap fija el estado inicial: sin JS el texto se ve completo.
+- B. Ilustraciones: las mismas líneas de tiempo pausadas del escritorio (`buildGfx`), con `animation` + `scrub` entre `top 90%` y `center 45%` de la figura (el inmueble tiene 4 escenas; el monolito `top 98%`). Al terminar el recorrido el resultado es el cuadro final estático. El diff y el bloque float de COBOL siguen estáticos.
+- C. Hilo vertical: confinado a un riel de 14 px dentro del gutter derecho (3 px del borde), sin tocar texto ni ilustraciones. Se dibuja (DrawSVG) a lo largo de `#recorrido` (`top 60%` a `bottom 60%`) y su trazo pasa de un acento al siguiente entre estaciones (fósforo, hueso verdoso, turquesa, ámbar) con un scrub corto, sin parpadeo.
+- Todo se crea dentro del `matchMedia` y se revierte al cambiar de ancho.
+
 ## Saltos largos (transicion de teselas)
 - `scrollToTarget` (src/lib/scroll.ts) es la unica entrada: si la distancia al destino supera `LONG_JUMP` (3) alturas de ventana y no hay movimiento reducido, usa el wipe (`src/lib/wipe.ts`); si no, el scroll suave de siempre. Aplica a 'Volver al inicio', T, C, 'Contacto' del hero y el foco en 'Aceptar' (Fly). Recorrido (~900 px) sigue suave.
 - Overlay canvas 2D fijo (`--z-wipe` 150, aria-hidden), creado en el primer uso, oculto y sin rAF en reposo. Rejilla de celdas cuadradas (56-66 px escritorio, ~300 celdas movil), grafito (#181a1e, mas claro que `--bg`) con ~14% teñidas con la paleta del retrato a baja saturacion. Cubre ~0.45 s en diagonal, mantiene ~0.05 s totalmente cubierto (aqui salta el scroll, instantaneo con Lenis `immediate+force`), destapa ~0.55 s en el mismo orden. Celdas a tamano completo con fundido de alfa de ~90 ms (corte en cuadrados nitidos, sin escalado). Sin parpadeo: todo progresivo y por tiempo acumulado (un frame largo nunca salta el progreso).

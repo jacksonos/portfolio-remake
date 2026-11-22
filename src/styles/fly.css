@@ -282,6 +282,13 @@
   .st-title { white-space: normal; padding-top: 0.1em; margin-bottom: 22px; }
   .st-meta { margin-bottom: 20px; }
   .st-lesson { margin-top: 4px; }
+  /* el inmueble no debe pegarse al mapa del stack que va debajo */
+  .gx-tower { margin-bottom: clamp(24px, 8vw, 36px); }
+}
+
+/* movil con movimiento: el hilo se confina a un riel de 14 px dentro del gutter derecho (no cruza texto ni ilustraciones) */
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .fly-thread-v { inset: 0 3px 0 auto; width: 14px; }
 }
 
 /* ======================= TUNEL 3D (escritorio, con movimiento) ======================= */

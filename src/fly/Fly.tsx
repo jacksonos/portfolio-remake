@@ -108,6 +108,22 @@ function makeBits(count: number, seed: number, sizes: number[], ops: number[], r
 
 const copyOf = (i: number) => fly.stations[i]
 
+/** Lineas de tiempo pausadas de los 5 graficos centrales (escritorio y movil las construyen igual; el llamador las gobierna) */
+const buildGfx = (el: HTMLElement) =>
+  [
+    { i: 0, build: buildPack, sel: '.gx-pack' },
+    { i: 1, build: buildMono, sel: '.gx-mono' },
+    { i: 2, build: buildKnee, sel: '.gx-knee' },
+    { i: 3, build: buildTower, sel: '.gx-tower', redraw: redrawTower },
+    { i: 4, build: buildLoop, sel: '.gx-loop' },
+  ].map((g) => ({
+    i: g.i,
+    sel: g.sel,
+    redraw: g.redraw ? () => g.redraw!(el.querySelector<HTMLElement>(g.sel)!) : undefined,
+    tl: g.build(el.querySelector<HTMLElement>(g.sel)!),
+    t: -1,
+  }))
+
 function Station({ i, children, vis, gfx }: { i: number; children?: React.ReactNode; vis?: React.ReactNode; gfx?: React.ReactNode }) {
   const s = copyOf(i)
   return (
@@ -165,18 +181,7 @@ export default function Fly() {
         const bitData = [...dust, ...lines]
         const cache = { st: sts.map(() => -1), bit: bits.map(() => -1), accent: '' }
         // graficos centrales: lineas de tiempo pausadas, avanzan con t lineal en el scroll: de (inicio de la pausa - lead) al fin de la pausa
-        const gfx = [
-          { i: 0, build: buildPack, sel: '.gx-pack' },
-          { i: 1, build: buildMono, sel: '.gx-mono' },
-          { i: 2, build: buildKnee, sel: '.gx-knee' },
-          { i: 3, build: buildTower, sel: '.gx-tower', redraw: redrawTower },
-          { i: 4, build: buildLoop, sel: '.gx-loop' },
-        ].map((g) => ({
-          i: g.i,
-          redraw: g.redraw ? () => g.redraw!(el.querySelector<HTMLElement>(g.sel)!) : undefined,
-          tl: g.build(el.querySelector<HTMLElement>(g.sel)!),
-          t: -1,
-        }))
+        const gfx = buildGfx(el)
         const path = thread.current!
         gsap.set(path, { drawSVG: '0%' })
         const threadTween = gsap.fromTo(path, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', paused: true })
@@ -262,17 +267,49 @@ export default function Fly() {
         }
       })
 
-      // ------------------------------------------------ movil o movimiento reducido: apilado
-      mm.add({ stacked: '(max-width: 767px), (prefers-reduced-motion: reduce)', reduce: '(prefers-reduced-motion: reduce)' }, (ctx) => {
+      // ------------------------------------------------ movimiento reducido (cualquier ancho): apilado estatico
+      mm.add('(prefers-reduced-motion: reduce)', () => {
         gsap.set(thread.current!, { clearProps: 'all' })
-        const reduce = !!ctx.conditions?.reduce
-        // movil: continuo (el hero se va mientras entra el vuelo); movimiento reducido: un solo salto al llegar
-        const hold = ScrollTrigger.create({
-          trigger: el,
-          start: reduce ? 'top 60%' : 'top 70%',
-          end: reduce ? 'top 60%' : 'top 20%',
-        })
+        // movimiento reducido: un solo salto al llegar
+        const hold = ScrollTrigger.create({ trigger: el, start: 'top 60%', end: 'top 60%' })
         const off = registerAnchors('dissolve', () => [hold.start, hold.end])
+        return () => { off(); hold.kill() }
+      })
+
+      // ------------------------------------------------ movil con movimiento: apilado + animaciones atadas al scroll (scrub, reversibles)
+      mm.add('(max-width: 767px) and (prefers-reduced-motion: no-preference)', () => {
+        gsap.set(thread.current!, { clearProps: 'all' })
+        // continuo (el hero se va mientras entra el vuelo)
+        const hold = ScrollTrigger.create({ trigger: el, start: 'top 70%', end: 'top 20%' })
+        const off = registerAnchors('dissolve', () => [hold.start, hold.end])
+
+        // C. hilo vertical: se dibuja a lo largo de #recorrido y toma el acento de la estacion visible
+        const vpath = el.querySelector<SVGPathElement>('.fly-thread-v path')!
+        gsap.fromTo(vpath, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', scrollTrigger: { trigger: el, start: 'top 60%', end: 'bottom 60%', scrub: true } })
+        const sts = Array.from(el.querySelectorAll<HTMLElement>('.st'))
+        const acc = sts.map((n) => getComputedStyle(n).getPropertyValue('--accent').trim())
+        sts.forEach((n, i) => {
+          if (i === 0) return
+          gsap.fromTo(vpath, { stroke: acc[i - 1] }, { stroke: acc[i], ease: 'none', immediateRender: false, scrollTrigger: { trigger: n, start: 'top 85%', end: 'top 45%', scrub: true } })
+        })
+
+        // A. revelado por estacion: meta, titulo, leccion y texto escalonados (opacidad + 18 px)
+        sts.forEach((n) => {
+          const parts = n.querySelectorAll('.st-meta, .st-title, .st-lesson, .st-text, .st-parts')
+          gsap.fromTo(parts, { opacity: 0, y: 18 }, { opacity: 1, y: 0, ease: 'power1.out', stagger: 0.25, scrollTrigger: { trigger: n, start: 'top 80%', end: 'top 35%', scrub: true } })
+        })
+
+        // B. ilustraciones: las mismas lineas de tiempo del escritorio, con el progreso atado al paso por la pantalla
+        buildGfx(el).forEach((g) => {
+          const mono = g.i === 1 // 4 escenas: recorrido mas largo
+          ScrollTrigger.create({
+            trigger: el.querySelector(g.sel),
+            start: mono ? 'top 98%' : 'top 90%',
+            end: 'center 45%',
+            animation: g.tl,
+            scrub: true,
+          })
+        })
         return () => { off(); hold.kill() }
       })
     },
