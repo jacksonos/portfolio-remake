@@ -330,7 +330,21 @@
   .fly-line { width: 640px; height: 1px; margin-left: -320px; background: var(--grey2); }
 
   /* borde compartido: contenedor centrado (<=1480px) y margen seguro (5vw) para la escala 1,08 de la camara en pausa */
-  :root { --edge: max(5vw, calc((100vw - 1480px) / 2)); --gap-col: clamp(56px, 4.5vw, 110px); }
+  :root { --edge: max(5vw, calc((100vw - 1480px * var(--k)) / 2)); --k: 1; --gap-col: clamp(56px, 4.5vw, calc(110px * var(--k))); }
+    @media (min-width: 1920px) { :root { --k: 1.2; } }
+  @media (min-width: 2400px) { :root { --k: 1.5; } }
+  @media (min-width: 1920px) and (max-height: 960px) { :root { --k: 1; } }
+  @media (min-width: 2400px) and (max-height: 1250px) and (min-height: 961px) { :root { --k: 1.2; } }
+  /* texto y notas crecen con k (los svg ya escalan con su caja) */
+  .st-meta, .vis-tag, .diff-file, .hunk-head, .st-parts dt, .gx-note { font-size: calc(11px * var(--k)); }
+  .hunk-actions button, .diff-sum, .hunk-code, .vis-field { font-size: calc(12px * var(--k)); }
+  .st-lesson { font-size: clamp(19px, 2.2vw, calc(24px * var(--k))); }
+  .st-text, .st-parts dd { font-size: calc(15px * var(--k)); }
+  .st-vis { font-size: calc(13px * var(--k)); }
+  .vis-float { font-size: calc(14px * var(--k)); }
+  .vis-float span { font-size: calc(11px * var(--k)); }
+  .hunk-title { font-size: calc(14px * var(--k)); }
+  .gx-cap { font-size: calc(11px * var(--k)); }
   .st {
     position: absolute;
     inset: 0;
@@ -348,16 +362,16 @@
     position: absolute;
     top: 50%;
     left: var(--edge);
-    width: min(760px, 50vw);
+    width: min(calc(760px * var(--k)), 50vw);
     transform: translateY(-50%);
   }
-  .st-title { font-size: clamp(110px, 13vw, 230px); margin: 0 0 clamp(18px, 3vh, 34px); }
+  .st-title { font-size: clamp(110px, 13vw, calc(230px * var(--k))); margin: 0 0 clamp(18px, 3vh, 34px); }
   .st-lesson { max-width: 30ch; }
   .st[data-i='1'] .st-copy,
   .st[data-i='3'] .st-copy {
     left: auto;
     right: var(--edge);
-    width: min(660px, 44vw);
+    width: min(calc(660px * var(--k)), 44vw);
   }
   .st[data-i='1'] .st-title,
   .st[data-i='3'] .st-title { text-align: right; }
@@ -372,24 +386,24 @@
     position: absolute;
     top: 50%;
     right: var(--edge);
-    width: min(500px, 34vw);
+    width: min(calc(500px * var(--k)), 34vw);
     transform: translateY(-50%);
   }
   .st[data-i='1'] .st-vis,
   .st[data-i='3'] .st-vis { right: auto; left: var(--edge); }
-  .st-rendimiento .st-title { font-size: clamp(80px, 9.6vw, 170px); }
-  .st[data-i='4'] .st-title { font-size: clamp(100px, 11.5vw, 200px); }
+  .st-rendimiento .st-title { font-size: clamp(80px, 9.6vw, calc(170px * var(--k))); }
+  .st[data-i='4'] .st-title { font-size: clamp(100px, 11.5vw, calc(200px * var(--k))); }
   /* Full Stack (3.3em de ancho, nowrap, columna derecha): el titulo nunca supera el ancho de su columna */
-  .st[data-i='3'] .st-title { font-size: min(clamp(110px, 13vw, 230px), calc(min(660px, 44vw) / 3.4)); }
-  .vis-field { font-size: 12px; margin-bottom: 20px; }
+  .st[data-i='3'] .st-title { font-size: min(clamp(110px, 13vw, calc(230px * var(--k))), calc(min(calc(660px * var(--k)), 44vw) / 3.4)); }
+  .vis-field { margin-bottom: 20px; }
 
   /* graficos centrales: la zona vacia entre la columna de texto y la visual (z por debajo de ambos) */
   .st-copy, .st-vis { z-index: 2; }
-  .st[data-i='0'] .st-copy { width: min(500px, 34vw); }
-  .st[data-i='0'] .st-vis { width: max-content; max-width: min(500px, 31vw); } /* la tinta llega al borde derecho */
-  .st[data-i='4'] .st-copy { width: min(470px, 34vw); }
+  .st[data-i='0'] .st-copy { width: min(calc(500px * var(--k)), 34vw); }
+  .st[data-i='0'] .st-vis { width: max-content; max-width: min(calc(500px * var(--k)), 31vw); } /* la tinta llega al borde derecho */
+  .st[data-i='4'] .st-copy { width: min(calc(470px * var(--k)), 34vw); }
   .st[data-i='4'] .st-parts, .st[data-i='4'] .st-text { max-width: 100%; }
-  .st[data-i='4'] .st-vis { width: min(580px, 30vw); }
+  .st[data-i='4'] .st-vis { width: min(calc(580px * var(--k)), 30vw); }
   .gx-zone {
     position: absolute;
     top: 0;
@@ -401,20 +415,20 @@
     margin: 0;
   }
   .gx-zone-0 {
-    left: calc(var(--edge) + max(min(500px, 34vw), calc(clamp(110px, 13vw, 230px) * 2.3)) + var(--gap-col));
-    right: calc(var(--edge) + min(500px, 31vw) + var(--gap-col));
+    left: calc(var(--edge) + max(min(calc(500px * var(--k)), 34vw), calc(clamp(110px, 13vw, calc(230px * var(--k))) * 2.3)) + var(--gap-col));
+    right: calc(var(--edge) + min(calc(500px * var(--k)), 31vw) + var(--gap-col));
   }
   .gx-zone-1 {
     justify-content: flex-start; /* el grafico pegado al borde exterior: la composicion queda simetrica */
     bottom: 14vh; /* el hilo pasa por debajo */
     left: var(--edge);
-    right: calc(var(--edge) + min(660px, 44vw) + var(--gap-col));
+    right: calc(var(--edge) + min(calc(660px * var(--k)), 44vw) + var(--gap-col));
   }
   .gx-zone-3 {
     top: 5.5vh; /* la camara en pausa llega a 1,08: el rotulo no puede salir por arriba */
     bottom: 26vh; /* por encima del hilo */
     left: var(--edge);
-    right: calc(var(--edge) + min(660px, 44vw) + var(--gap-col));
+    right: calc(var(--edge) + min(calc(660px * var(--k)), 44vw) + var(--gap-col));
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
@@ -422,38 +436,40 @@
   }
   .gx-zone-2 {
     justify-content: flex-end;
-    left: calc(var(--edge) + max(min(660px, 44vw), calc(clamp(80px, 9.6vw, 170px) * 4.5)) + var(--gap-col));
+    left: calc(var(--edge) + max(min(calc(660px * var(--k)), 44vw), calc(clamp(80px, 9.6vw, calc(170px * var(--k))) * 4.5)) + var(--gap-col));
     right: var(--edge);
   }
   .gx-zone-4 {
     bottom: 9vh; /* sube el carril de produccion por encima del hilo */
-    left: calc(var(--edge) + max(min(470px, 34vw), calc(clamp(100px, 11.5vw, 200px) * 2.52)) + var(--gap-col));
-    right: calc(var(--edge) + min(580px, 30vw) + var(--gap-col));
+    left: calc(var(--edge) + max(min(calc(470px * var(--k)), 34vw), calc(clamp(100px, 11.5vw, calc(200px * var(--k))) * 2.52)) + var(--gap-col));
+    right: calc(var(--edge) + min(calc(580px * var(--k)), 30vw) + var(--gap-col));
   }
   .gx { width: min(100%, var(--gx-max), calc(74svh * var(--gx-ar))); }
   .gx-zone-1 .gx { margin: 0 auto 0 0; }
   .gx-zone-2 .gx { margin: 0 0 0 auto; }
-  .gx-pack { --gx-ar: 1.2; }
-  .gx-mono { --gx-ar: 0.96; --gx-max: 560px; }
+  .gx-pack { --gx-ar: 1.2; --gx-max: calc(420px * var(--k)); }
+  .gx-loop { --gx-max: calc(280px * var(--k)); }
+  .gx-tower { --gx-max: calc(440px * var(--k)); }
+  .gx-mono { --gx-ar: 0.96; --gx-max: calc(560px * var(--k)); }
   .gx-mono { width: min(100%, var(--gx-max), calc(66svh * var(--gx-ar))); }
   /* grafico del inmueble: ocupa el alto libre sobre el mapa del stack; el canvas se ajusta a su caja */
   .gx-zone-3 { align-items: flex-start; }
-  .gx-zone-3 > * { width: 100%; max-width: 820px; }
+  .gx-zone-3 > * { width: 100%; max-width: calc(820px * var(--k)); }
   .gx.gx-tower { flex: 1 1 0; min-height: 0; margin: 0; display: flex; flex-direction: column; }
   .gx-tower .gx-tag { flex: none; margin-bottom: 6px; }
   .gx-tower canvas { flex: 1 1 0; min-height: 0; height: 0; aspect-ratio: auto; }
   .gx-zone-3 .st-vis { position: static; transform: none; width: 100%; flex: none; }
   .gx-zone-3 .vis-tag { margin-bottom: 6px; }
   .gx-zone-3 .sk-map { columns: 2; column-gap: 28px; }
-  .gx-zone-3 .sk-row { grid-template-columns: minmax(0, 1fr); gap: 1px; padding: 6px 0; break-inside: avoid; font-size: 12.5px; }
-  .gx-zone-3 .sk-row dt { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .gx-zone-3 .sk-row { grid-template-columns: minmax(0, 1fr); gap: 1px; padding: 6px 0; break-inside: avoid; font-size: calc(12.5px * var(--k)); }
+  .gx-zone-3 .sk-row dt { font-size: calc(11px * var(--k)); letter-spacing: 0.06em; text-transform: uppercase; }
   .gx-zone-3 .sk-row dd span { display: none; }
   @media (max-height: 800px) {
     .gx-zone-3 { gap: 6px; }
     .gx-zone-3 .sk-row { padding: 2px 0; }
     .gx-zone-3 .vis-tag { margin-bottom: 2px; }
   }
-  .gx-knee { --gx-ar: 1.35; }
+  .gx-knee { --gx-ar: 1.35; --gx-max: calc(760px * var(--k)); }
   .gx-loop { --gx-ar: 0.5; }
   .gx-loop { position: relative; }
   .gx-note-human { position: absolute; left: -24px; bottom: 6px; writing-mode: vertical-rl; transform: rotate(180deg); }
