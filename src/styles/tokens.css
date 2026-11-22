@@ -1,0 +1,122 @@
+/* Tokens, reset y utilidades base. Fuentes se importan en main.tsx (fontsource). */
+:root {
+  --bg: #0a0a0b;
+  --fg: #ecebe6; /* hueso */
+  --dim: #9a9a94; /* AA sobre --bg */
+  --line: #26262a;
+  --phos: #3dff72;
+  --cyan: #5ce1e6;
+  --amber: #ffb000;
+  --grey1: #6b7078;
+  --grey2: #a7acb4;
+
+  --f-serif: 'Instrument Serif', 'Times New Roman', serif;
+  --f-sans: 'Geist Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'Geist Mono Variable', ui-monospace, Consolas, monospace;
+
+  --radius: 2px;
+  --gutter: clamp(20px, 3vw, 48px);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* escala z: canvas < contenido < texto hero < chrome < modal < skip */
+  --z-canvas: 0;
+  --z-content: 10;
+  --z-hero-text: 20;
+  --z-chrome: 80;
+  --z-modal: 100;
+  --z-wipe: 150; /* transicion de teselas: sobre modal, bajo skip link */
+  --z-skip: 200;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--f-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, p, ul, ol, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+svg { display: block; }
+
+:focus-visible {
+  outline: 2px solid var(--phos);
+  outline-offset: 3px;
+  border-radius: var(--radius);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: var(--z-skip);
+  padding: 10px 14px;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 14px;
+  border-radius: var(--radius);
+  transform: translateY(-200%);
+}
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* Lienzo del mosaico: fijo, detras de todo, persiste durante el scroll. Cubre SIEMPRE el viewport entero:
+   la escala/opacidad de la vista las aplica el motor dentro del lienzo, nunca un transform CSS que encoja su caja. */
+.mosaic {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+}
+
+main {
+  position: relative;
+  z-index: var(--z-content);
+}
+main:focus {
+  outline: none;
+}
+
+::selection {
+  background: var(--phos);
+  color: var(--bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

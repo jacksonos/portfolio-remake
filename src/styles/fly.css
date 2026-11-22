@@ -1,0 +1,465 @@
+/* Vuelo (#recorrido). Base = apilado (movil y movimiento reducido).
+   El tunel 3D vive en el bloque final bajo la misma condicion que usa Fly.tsx. */
+.fly {
+  --accent: var(--phos);
+  position: relative;
+  padding-bottom: clamp(40px, 10vh, 120px);
+}
+.fly-pin {
+  position: relative;
+}
+.fly-stage,
+.fly-world {
+  display: contents;
+}
+
+.fly-thread,
+.fly-dust,
+.fly-line {
+  display: none;
+}
+.fly-thread-v {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.fly-thread-v path,
+.fly-thread path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.35;
+}
+
+/* ---- estaciones (apiladas) */
+.st {
+  position: relative;
+  display: grid;
+  gap: clamp(28px, 5vh, 56px);
+  padding: clamp(72px, 14vh, 150px) var(--gutter) 0;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+  .st-cobol { --accent: var(--phos); }
+  .st-spring { --accent: #c9e6bd; }
+  .st-rendimiento { --accent: var(--cyan); }
+  .st-fullstack { --accent: #e6c15c; }
+  .st-ai { --accent: var(--amber); }
+}
+
+.st-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-bottom: 14px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.st-meta li:first-child {
+  color: var(--accent);
+}
+.st-title {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(56px, 17vw, 150px);
+  line-height: 0.9;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+  margin-bottom: 18px;
+}
+.st-lesson {
+  font-size: clamp(19px, 2.2vw, 24px);
+  line-height: 1.3;
+  max-width: 28ch;
+}
+.st-text {
+  margin-top: 14px;
+  max-width: 44ch;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--dim);
+}
+
+/* ---- visuales */
+.st-vis {
+  font-family: var(--f-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  min-width: 0;
+}
+.vis-field {
+  margin: 0 0 18px;
+  font: inherit;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  opacity: 0.5;
+  overflow: hidden;
+  white-space: pre;
+}
+.vis-float {
+  font-size: 14px;
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  margin-top: 8px;
+}
+.vis-float span {
+  flex: none;
+  width: 5.5em;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.vis-float-bad { color: var(--dim); }
+.vis-float-good { color: var(--fg); }
+.vis-float-good span { color: var(--accent); }
+
+.vis-tag {
+  margin-bottom: 14px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* ---- graficos centrales (ilustraciones de linea fina) y notas de margen
+   Estado por defecto = cuadro FINAL. En el vuelo, Fly.tsx lo escala con el scroll (GSAP, sin bucles). */
+.gx-zone { display: block; margin-top: 4px; pointer-events: none; }
+.gx { width: 100%; max-width: var(--gx-max, 440px); margin: 0 auto; font-family: var(--f-mono); pointer-events: none; }
+.gx svg { width: 100%; height: auto; overflow: visible; }
+.gx-pack { --gx-max: 420px; }
+.gx-knee { --gx-max: 760px; }
+.gx-loop { --gx-max: 280px; }
+.gx-mono { --gx-max: 440px; container-type: inline-size; }
+/* figura estrecha (movil o columna angosta): sube la tipografia del svg para que se lea a >= 11 px; sin nombres dentro de las cajas */
+@container (max-width: 400px) {
+  .gx-mono .gx-t { font-size: 14.2px; }
+  .gx-mono .gx-m-name { font-size: 15px; }
+  .gx-mono .gx-modlab { display: none; }
+}
+@container (max-width: 340px) {
+  .gx-mono .gx-t { font-size: 16px; }
+}
+.gx-tower { --gx-max: 440px; }
+.gx-tower canvas { display: block; width: 100%; aspect-ratio: 1.25; }
+.gx-tag { margin-bottom: 12px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); }
+.gx-s { fill: none; stroke: var(--fg); stroke-opacity: 0.5; stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; }
+.gx-s.gx-faint { stroke-opacity: 0.3; }
+.gx-s.gx-acc { stroke: var(--accent); stroke-opacity: 0.55; }
+.gx-s.gx-resp { stroke-width: 1.25; stroke-opacity: 0.55; }
+.gx-s.gx-thr { stroke-dasharray: 4 4; stroke-opacity: 0.4; }
+.gx-t { font-family: var(--f-mono); font-size: 12.5px; fill: var(--dim); }
+.gx-t.gx-acc-t { fill: var(--accent); }
+.gx-dig { font-size: 16px; fill: var(--fg); }
+.gx-sign { fill: var(--accent); }
+.gx-hex { font-size: 12.5px; }
+.gx-lab { font-size: 12px; fill: var(--fg); }
+.gx-head { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.gx-node rect { fill: var(--bg); }
+.gx-tok { fill: var(--accent); fill-opacity: 0.9; }
+/* estacion 2: el monolito bajo la lupa */
+.gx-m-eye { fill: none; stroke: var(--accent); stroke-opacity: 0.9; stroke-width: 3; stroke-linecap: round; }
+.gx-m-name { font-size: 13px; fill: var(--fg); }
+.gx-m-sub { font-size: 11.5px; }
+.gx-ph { opacity: 0; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.gx-ph2 { opacity: 1; }
+.gx-modlab, .gx-idxlab, .gx-bat-lab, .gx-ba { font-size: 11.5px; }
+.gx-lab-b { font-size: 12px; fill: var(--fg); }
+.gx-lab-a { font-size: 12px; }
+.gx-mono .gx-bar { stroke-opacity: 0.7; }
+.gx-mono .gx-hot-ring { stroke-opacity: 0.7; }
+.gx-cap { margin-top: 10px; font-size: 11px; line-height: 1.5; color: var(--dim); }
+.gx-ruler { margin-top: 16px; }
+.gx-note { font-size: 11px; letter-spacing: 0.04em; color: var(--dim); }
+.gx-note-ruler { margin-top: 4px; text-align: right; }
+.gx-note-human { display: none; }
+
+/* estacion 4: stack por funcion */
+.sk-map { margin: 0; border-bottom: 1px solid var(--line); }
+.sk-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+  gap: 4px 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.sk-row dt { color: var(--accent); }
+.sk-row dd { margin: 0; color: var(--fg); }
+.sk-row dd span { display: block; font-size: 12px; color: var(--dim); }
+
+/* estacion 5: dos partes */
+.st-parts { margin: 14px 0 0; max-width: 44ch; }
+.st-parts div + div { margin-top: 12px; }
+.st-parts dt {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.st-parts dd { margin: 4px 0 0; font-size: 15px; line-height: 1.5; color: var(--dim); }
+
+/* ---- diff */
+.diff {
+  background: #0d0d0f;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-family: var(--f-mono);
+}
+.diff-file {
+  padding: 12px 16px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+  border-bottom: 1px solid var(--line);
+}
+.hunk { border-bottom: 1px solid var(--line); }
+.hunk[data-verdict='accepted'] { box-shadow: inset 2px 0 0 var(--accent); }
+.hunk[data-verdict='rejected'] { box-shadow: inset 2px 0 0 var(--grey1); }
+.hunk-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px 6px;
+}
+.hunk-title { font-family: var(--f-sans); font-size: 14px; color: var(--fg); }
+.hunk-head { font-size: 11px; color: var(--dim); margin-top: 2px; }
+.hunk-actions { display: flex; gap: 8px; flex: none; }
+.hunk-actions button {
+  padding: 6px 12px;
+  border: 1px solid var(--grey1);
+  border-radius: var(--radius);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
+}
+.hunk-actions button:hover { border-color: var(--fg); }
+.hunk-actions button:first-child[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.hunk-actions button:last-child[aria-pressed='true'] { background: var(--grey2); border-color: var(--grey2); color: var(--bg); }
+.hunk-code {
+  margin: 0;
+  padding: 6px 16px 14px;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.dl { display: block; padding-left: 1.6em; text-indent: -1.6em; }
+.dl-k { display: inline-block; width: 1.6em; text-indent: 0; }
+.dl-add { color: var(--accent); }
+.dl-del { color: var(--dim); }
+.dl-ctx { color: #8b9099; }
+.hunk[data-verdict='rejected'] .dl-add { color: #8b9099; text-decoration: line-through; }
+.diff-sum { padding: 12px 16px; font-size: 12px; color: var(--fg); }
+
+@media (min-width: 768px) {
+  .st { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 56px; }
+  .st-title { font-size: clamp(88px, 11vw, 170px); }
+  /* apilado en escritorio (movimiento reducido): texto y visual en la fila 1, el grafico completo debajo */
+  .st-copy { grid-column: 1; grid-row: 1; }
+  .st-vis { grid-column: 2; grid-row: 1; }
+  .gx-zone { grid-column: 1 / -1; grid-row: 2; }
+}
+@media (max-width: 767px) {
+  .vis-field { font-size: 11px; }
+  .st-title { white-space: normal; padding-top: 0.1em; margin-bottom: 22px; }
+  .st-meta { margin-bottom: 20px; }
+  .st-lesson { margin-top: 4px; }
+}
+
+/* ======================= TUNEL 3D (escritorio, con movimiento) ======================= */
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .fly {
+    height: 100vh;
+    height: 100svh;
+    padding-bottom: 0;
+    overflow: clip;
+  }
+  .fly-pin { height: 100%; overflow: clip; }
+  .fly-thread-v { display: none; }
+  .fly-thread {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .fly-thread path { vector-effect: none; opacity: 0.8; }
+  .fly-stage {
+    display: block;
+    position: absolute;
+    inset: 0;
+    perspective: 1200px;
+    perspective-origin: 50% 50%;
+  }
+  .fly-world {
+    display: block;
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .fly-dust,
+  .fly-line {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .fly-dust { background: var(--accent, var(--fg)); margin: -1px 0 0 -1px; } /* particulas del retrato disuelto */
+  .fly-line { width: 640px; height: 1px; margin-left: -320px; background: var(--grey2); }
+
+  /* borde compartido: contenedor centrado (<=1480px) y margen seguro (5vw) para la escala 1,08 de la camara en pausa */
+  :root { --edge: max(5vw, calc((100vw - 1480px) / 2)); --gap-col: clamp(56px, 4.5vw, 110px); }
+  .st {
+    position: absolute;
+    inset: 0;
+    display: block;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(0, 0, calc(var(--i) * -1500px));
+  }
+  .st.is-on .vis-diff { pointer-events: auto; }
+
+  .st-copy {
+    position: absolute;
+    top: 50%;
+    left: var(--edge);
+    width: min(760px, 50vw);
+    transform: translateY(-50%);
+  }
+  .st-title { font-size: clamp(110px, 13vw, 230px); margin: 0 0 clamp(18px, 3vh, 34px); }
+  .st-lesson { max-width: 30ch; }
+  .st[data-i='1'] .st-copy,
+  .st[data-i='3'] .st-copy {
+    left: auto;
+    right: var(--edge);
+    width: min(660px, 44vw);
+  }
+  .st[data-i='1'] .st-title,
+  .st[data-i='3'] .st-title { text-align: right; }
+  .st[data-i='1'] .st-meta,
+  .st[data-i='3'] .st-meta { justify-content: flex-end; }
+  .st[data-i='1'] .st-lesson,
+  .st[data-i='3'] .st-lesson,
+  .st[data-i='1'] .st-text,
+  .st[data-i='3'] .st-text { margin-left: auto; }
+
+  .st-vis {
+    position: absolute;
+    top: 50%;
+    right: var(--edge);
+    width: min(500px, 34vw);
+    transform: translateY(-50%);
+  }
+  .st[data-i='1'] .st-vis,
+  .st[data-i='3'] .st-vis { right: auto; left: var(--edge); }
+  .st-rendimiento .st-title { font-size: clamp(80px, 9.6vw, 170px); }
+  .st[data-i='4'] .st-title { font-size: clamp(100px, 11.5vw, 200px); }
+  /* Full Stack (3.3em de ancho, nowrap, columna derecha): el titulo nunca supera el ancho de su columna */
+  .st[data-i='3'] .st-title { font-size: min(clamp(110px, 13vw, 230px), calc(min(660px, 44vw) / 3.4)); }
+  .vis-field { font-size: 12px; margin-bottom: 20px; }
+
+  /* graficos centrales: la zona vacia entre la columna de texto y la visual (z por debajo de ambos) */
+  .st-copy, .st-vis { z-index: 2; }
+  .st[data-i='0'] .st-copy { width: min(500px, 34vw); }
+  .st[data-i='0'] .st-vis { width: max-content; max-width: min(500px, 31vw); } /* la tinta llega al borde derecho */
+  .st[data-i='4'] .st-copy { width: min(470px, 34vw); }
+  .st[data-i='4'] .st-parts, .st[data-i='4'] .st-text { max-width: 100%; }
+  .st[data-i='4'] .st-vis { width: min(580px, 30vw); }
+  .gx-zone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+  }
+  .gx-zone-0 {
+    left: calc(var(--edge) + max(min(500px, 34vw), calc(clamp(110px, 13vw, 230px) * 2.3)) + var(--gap-col));
+    right: calc(var(--edge) + min(500px, 31vw) + var(--gap-col));
+  }
+  .gx-zone-1 {
+    justify-content: flex-start; /* el grafico pegado al borde exterior: la composicion queda simetrica */
+    bottom: 14vh; /* el hilo pasa por debajo */
+    left: var(--edge);
+    right: calc(var(--edge) + min(660px, 44vw) + var(--gap-col));
+  }
+  .gx-zone-3 {
+    top: 5.5vh; /* la camara en pausa llega a 1,08: el rotulo no puede salir por arriba */
+    bottom: 26vh; /* por encima del hilo */
+    left: var(--edge);
+    right: calc(var(--edge) + min(660px, 44vw) + var(--gap-col));
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 14px;
+  }
+  .gx-zone-2 {
+    justify-content: flex-end;
+    left: calc(var(--edge) + max(min(660px, 44vw), calc(clamp(80px, 9.6vw, 170px) * 4.5)) + var(--gap-col));
+    right: var(--edge);
+  }
+  .gx-zone-4 {
+    bottom: 9vh; /* sube el carril de produccion por encima del hilo */
+    left: calc(var(--edge) + max(min(470px, 34vw), calc(clamp(100px, 11.5vw, 200px) * 2.52)) + var(--gap-col));
+    right: calc(var(--edge) + min(580px, 30vw) + var(--gap-col));
+  }
+  .gx { width: min(100%, var(--gx-max), calc(74svh * var(--gx-ar))); }
+  .gx-zone-1 .gx { margin: 0 auto 0 0; }
+  .gx-zone-2 .gx { margin: 0 0 0 auto; }
+  .gx-pack { --gx-ar: 1.2; }
+  .gx-mono { --gx-ar: 0.96; --gx-max: 560px; }
+  .gx-mono { width: min(100%, var(--gx-max), calc(66svh * var(--gx-ar))); }
+  /* grafico del inmueble: ocupa el alto libre sobre el mapa del stack; el canvas se ajusta a su caja */
+  .gx-zone-3 { align-items: flex-start; }
+  .gx-zone-3 > * { width: 100%; max-width: 820px; }
+  .gx.gx-tower { flex: 1 1 0; min-height: 0; margin: 0; display: flex; flex-direction: column; }
+  .gx-tower .gx-tag { flex: none; margin-bottom: 6px; }
+  .gx-tower canvas { flex: 1 1 0; min-height: 0; height: 0; aspect-ratio: auto; }
+  .gx-zone-3 .st-vis { position: static; transform: none; width: 100%; flex: none; }
+  .gx-zone-3 .vis-tag { margin-bottom: 6px; }
+  .gx-zone-3 .sk-map { columns: 2; column-gap: 28px; }
+  .gx-zone-3 .sk-row { grid-template-columns: minmax(0, 1fr); gap: 1px; padding: 6px 0; break-inside: avoid; font-size: 12.5px; }
+  .gx-zone-3 .sk-row dt { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .gx-zone-3 .sk-row dd span { display: none; }
+  @media (max-height: 800px) {
+    .gx-zone-3 { gap: 6px; }
+    .gx-zone-3 .sk-row { padding: 2px 0; }
+    .gx-zone-3 .vis-tag { margin-bottom: 2px; }
+  }
+  .gx-knee { --gx-ar: 1.35; }
+  .gx-loop { --gx-ar: 0.5; }
+  .gx-loop { position: relative; }
+  .gx-note-human { position: absolute; left: -24px; bottom: 6px; writing-mode: vertical-rl; transform: rotate(180deg); }
+  @media (min-width: 1280px) { .gx-note-human { display: block; } }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hunk-actions button { transition: none; }
+}

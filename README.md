@@ -1,32 +1,45 @@
-# React + TypeScript + Vite
+# portfolio-remake
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Portfolio de Michel Poma: del COBOL y el AS-400 bancario a full stack con IA.
 
-Currently, two official plugins are available:
+El sitio compone el retrato del titular con teselas en un canvas y lo recorre con un vuelo de cinco estaciones, animado con GSAP, ScrollTrigger y lenis.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- Vite
+- React 18
+- TypeScript
+- GSAP (con ScrollTrigger)
+- lenis
+- fontsource
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Uso
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```
+npm install
+npm run dev       # servidor de desarrollo
+npm run build     # tsc -b y build de producción en dist/
+npm run preview   # sirve dist/ en local
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Estructura
+
+```
+src/
+  main.tsx, App.tsx   punto de entrada y composición
+  content.ts          copy y datos del sitio
+  mosaic/             motor de teselas y retrato en canvas
+  hero/               portada
+  fly/                vuelo de cinco estaciones
+  chrome/             cursor, principios, cierre y atajos
+  lib/                scroll (lenis + GSAP) y utilidades
+  styles/             tokens y CSS por módulo
+public/               favicon, portrait.png, og.png
+DESIGN.md             decisiones de diseño
+```
+
+## Notas
+
+- El copy vive en `src/content.ts`.
+- `DESIGN.md` documenta las decisiones de diseño.
+- `public/portrait.png` y `public/og.png` son el retrato del titular.
