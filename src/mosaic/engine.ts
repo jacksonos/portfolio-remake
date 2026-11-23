@@ -50,8 +50,8 @@ const LIVE_FLIP_COOLDOWN = 25000 // ms hasta que la misma tesela puede girar de 
 const TILE_Y = TILE_COLORS.map(([r, g, b]) => (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255)
 const tileAlpha = (l: number) => 0.16 + 0.84 * Math.pow(l / (LEVELS - 1), 1.1) // igual que el atlas
 
-const PH_D = [1.02, 0.04] // foto en escritorio: [alto/vh, top/vh]
-const PH_M = [0.78, 0.09]
+export const PH_D = [1.02, 0.04] // foto en escritorio: [alto/vh, top/vh]
+export const PH_M = [0.78, 0.09]
 const PHOTO_GAMMA = 0.7 // solo foto: estira y sube los medios para que cara y gafas lean en glifo y tesela
 
 const qs = new URLSearchParams(location.search)

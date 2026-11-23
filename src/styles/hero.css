@@ -9,6 +9,10 @@
   overflow: clip;
 }
 
+.m-only {
+  display: none;
+}
+
 .hero-top {
   position: absolute;
   top: 0;
@@ -79,21 +83,26 @@
   color: var(--phos);
 }
 
+/* Capa fija como el lienzo del rostro (mismo 100vw x 100vh): el trazo no se mueve con el scroll y queda alineado con el retrato.
+   Vive dentro de main (z 10), por encima del lienzo y por debajo del texto del hero (z 20). Ningun ancestro tiene transform/contain. */
 .hero-scribble {
-  position: absolute;
+  position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
   z-index: 1;
 }
-.hero-scribble path {
+.hero-scribble .hs {
   fill: none;
   stroke: var(--fg);
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 0.9;
+}
+.hero-scribble .hs.is-acc {
+  stroke: var(--phos); /* filamento y rayos de la bombilla */
 }
 
 .hero-foot {
@@ -171,47 +180,102 @@
   .hero {
     --name-size: 27vw;
   }
+  .d-only {
+    display: none;
+  }
+  .m-only {
+    display: inline;
+  }
+  /* Inicio movil compacto: fila 1 marca + enlaces, fila 2 cargo + hora, fila 3 anos de oficio */
   .hero-top {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    row-gap: 14px;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'mark nav'
+      'role based'
+      'years years';
+    column-gap: 12px;
+    row-gap: 0;
+    align-items: center;
+    padding-top: 10px;
   }
   .hero-mark {
-    grid-column: 1 / -1;
+    grid-area: mark;
+    font-size: 24px;
+  }
+  .hero-now {
+    display: contents; /* cargo y anos pasan a ser celdas de la rejilla */
+  }
+  .hero-label-k {
+    display: none;
+  }
+  .hero-now .hero-label-v {
+    grid-area: role;
+    font-size: 14px;
+    margin-top: 2px;
   }
   .hero-label-sub {
-    width: fit-content;
-    padding: 2px 4px;
-    margin-left: -4px;
-    background: rgba(10, 10, 11, 0.88);
+    grid-area: years;
+    max-width: none;
+    margin-top: 3px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--dim);
   }
-  .hero-label-v,
+  .hero-based {
+    grid-area: based;
+    justify-self: end;
+    margin-top: 2px;
+  }
+  .hero-based .hero-label-v {
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .hero-time {
+    font-size: 12px;
+  }
+  .hero-top nav {
+    grid-area: nav;
+    justify-self: end;
+  }
   .hero-nav {
-    font-size: 12.5px;
+    flex-direction: row;
+    gap: 8px;
+    font-size: 13px;
+    margin-right: -6px; /* el texto del ultimo enlace queda alineado al margen */
+  }
+  .hero-nav a,
+  .hero-nav button {
+    display: block;
+    padding: 13px 6px; /* area tactil >= 44 px sin cambiar el aspecto */
+    line-height: 18px;
   }
   .hero-name {
     white-space: normal;
-    bottom: calc(var(--name-size) * (var(--name-lift) - 0.12));
+    text-align: left; /* mismo margen (gutter) que el resto del hero */
+    padding-left: calc(var(--gutter) + 0.04em); /* la M cursiva sobresale ~4 px a la izquierda: compensa */
+    /* la base de la ultima linea queda 24 px (+ barra de gestos) sobre el borde: bottom = 24px + safe - 0.12em */
+    bottom: calc(var(--name-size) * -0.12 + 25px + env(safe-area-inset-bottom, 0px));
+  }
+  .hero-name > div + div {
+    margin-left: 0; /* ambas lineas al mismo margen */
   }
   .hero-foot {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
-    bottom: calc(var(--name-size) * 1.81);
+    /* parrafo ~22 px sobre las mayusculas de la primera linea (base de Poma + 2 lineas de .92em + ~.7em de altura de mayuscula) */
+    bottom: calc(var(--name-size) * 1.68 + 25px + 22px + env(safe-area-inset-bottom, 0px));
   }
   .hero-blurb {
     font-size: 14px;
-    line-height: 1.75;
-    text-shadow: none;
-  }
-  /* respaldo solido por linea (sin blur ni degradado): el texto no depende de lo que haya detras */
-  .hero-blurb span {
-    background: rgba(10, 10, 11, 0.9);
-    padding: 3px 7px;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
+    line-height: 1.6;
+    /* velo plano (sin blur ni degradado) detras del bloque; sustituye al respaldo por linea */
+    padding: 8px 12px;
+    margin-left: -12px;
+    background: rgba(10, 10, 11, 0.58);
   }
   .hero-pill {
-    background: rgba(10, 10, 11, 0.92);
+    display: none; /* el enlace 'Recorrido' del encabezado cumple esa funcion */
+  }
+  .hero-scribble {
+    display: none;
   }
 }
 

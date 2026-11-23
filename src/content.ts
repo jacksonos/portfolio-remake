@@ -6,6 +6,7 @@ export const site = {
   name: 'Michel Poma',
   email: 'hello@michelpoma.dev',
   city: 'Lima, Perú',
+  cityShort: 'Lima', // solo móvil
   tz: 'America/Lima', // zona horaria IANA editable
   role: 'Full Stack Engineer · Aybar Corp',
   links: { github: 'https://github.com/jacksonos', linkedin: 'https://www.linkedin.com/in/michelpoma/' },
@@ -16,6 +17,7 @@ export const hero = {
   labels: { now: 'Actualmente', based: 'Basado en', nav: 'Navegación' },
   nowSub: 'más de tres años en software, año y medio en banca',
   nav: ['Recorrido', 'Principios, método y datos', 'Contacto'],
+  navShort: ['Recorrido', 'Principios', 'Contacto'], // etiquetas de móvil
   blurb:
     'Ingeniería de software en banca y servicios financieros: de COBOL y AS/400 a Java, Spring Batch y full stack, con IA en todo el ciclo y revisión humana en cada cambio.',
   cta: 'Ver el recorrido',
