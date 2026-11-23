@@ -15,7 +15,7 @@ export const site = {
 // ---------------------------------------------------------------- hero [A]
 export const hero = {
   labels: { now: 'Actualmente', based: 'Basado en', nav: 'Navegación' },
-  nowSub: 'más de tres años en software, año y medio en banca',
+  nowSub: '+3 años en software · +1,5 años en banca',
   nav: ['Recorrido', 'Principios, método y datos', 'Contacto'],
   navShort: ['Recorrido', 'Principios', 'Contacto'], // etiquetas de móvil
   blurb:

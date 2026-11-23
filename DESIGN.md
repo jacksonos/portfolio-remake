@@ -119,7 +119,7 @@ Build sin errores TS; 0 errores de consola; sin overflow horizontal; formación 
 - Posicionamiento: dominio primero ("Ingeniería de software en banca y servicios financieros"), con la IA como método de todo el ciclo, no como herramienta suelta.
 - Registro: tú, coherente. Verbos en primera persona con objeto concreto. Frases de menos de ~25 palabras.
 - Prohibido: apasionado/a, autodidacta, en constante aprendizaje, desarrollador web, experto, multidisciplinario sin concretar, y adjetivos sin prueba.
-- Sin datos inventados: ni empleadores, fechas ni métricas, ni rieles, normas o regulaciones concretas (Pix, SPEI, Yape, SBS, ISO 20022, PCI DSS...). La única cifra es "más de tres años en software, año y medio en banca".
+- Sin datos inventados: ni empleadores, fechas ni métricas, ni rieles, normas o regulaciones concretas (Pix, SPEI, Yape, SBS, ISO 20022, PCI DSS...). La única cifra es "+3 años en software · +1,5 años en banca".
 - La etiqueta de nivel ("Semi Senior") no aparece en el sitio; queda para LinkedIn/CV. "SSR" nunca significa server-side rendering aquí.
 - "AI-first" solo va emparejado con responsabilidad humana: la IA propone, yo reviso y respondo por lo que se integra.
 - Todo el copy vive en `src/content.ts`; el modal "Principios, método y datos" suma los bloques `chrome.method` y `chrome.datos`.
@@ -128,7 +128,7 @@ Build sin errores TS; 0 errores de consola; sin overflow horizontal; formación 
 - La identidad es Michel Poma, Lima, Perú. Las 5 estaciones del vuelo son el recorrido real: COBOL (Unibanca), Spring (BBVA vía Softtek), Rendimiento (BanBif vía Softtek), Full Stack (Aybar Corp), AI-first. Ya no hay estaciones de AS/400 nocturno ni "El puente".
 - Toda afirmación visible debe constar en `CLAIMS.md` (raíz del proyecto) con su fuente y estado. Si añades o cambias copy, actualiza `CLAIMS.md` en el mismo cambio.
 - Solo años (por ejemplo "2025 a 2026"), nunca fechas con mes. Los periodos se solapan: no se afirma exclusividad.
-- Nunca "fintech" ni años en banca más allá de "año y medio". Fórmula vigente: "más de tres años en software, año y medio en banca"; dominio: "banca y servicios financieros".
+- Nunca "fintech" ni años en banca más allá de "+1,5 años" (coherente con ~1,6 reales). Fórmula vigente: "+3 años en software · +1,5 años en banca"; dominio: "banca y servicios financieros".
 - Ningún nombre interno de Aybar (SDK, clientes, flujos): se habla de la clase de sistema.
 - Los visuales esquemáticos (Spring Batch, gráficos centrales, mapa del stack, diff) llevan la marca "ilustración" y no contienen cifras ni datos inventados.
 - Sin cifras ni logros hasta que existan datos verificables (las 5 preguntas de la sección 9 del CV maestro).
