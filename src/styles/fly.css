@@ -286,9 +286,23 @@
   .gx-tower { margin-bottom: clamp(24px, 8vw, 36px); }
 }
 
-/* movil con movimiento: el hilo se confina a un riel de 14 px dentro del gutter derecho (no cruza texto ni ilustraciones) */
+/* movil: linea de tiempo vertical en el gutter derecho (riel recto de 2 px, x = w-11..w-9; el texto llega a w-20) con un nodo por estacion.
+   Estado por defecto = completo y estatico (movimiento reducido); Fly.tsx lo ata al scroll cuando hay movimiento. */
+.fly-rail { display: none; }
+@media (max-width: 767px) {
+  .fly-thread-v { display: none; }
+  .fly-rail { display: block; position: absolute; right: 9px; width: 2px; pointer-events: none; }
+  .fly-rail::before,
+  .fly-rail-fill { content: ''; position: absolute; inset: 0; background: var(--dim); }
+  .fly-rail::before { opacity: 0.3; }
+  .fly-rail-fill { opacity: 0.65; transform-origin: top; }
+  .fly-rail-node {
+    position: absolute; left: -3px; width: 8px; height: 8px; margin-top: -4px; box-sizing: border-box; border-radius: 50%;
+    background: var(--accent); border: 1px solid var(--accent);
+  }
+}
 @media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
-  .fly-thread-v { inset: 0 3px 0 auto; width: 14px; }
+  .fly-rail-node { background: var(--bg); border-color: #55555a; } /* pendiente: anillo tenue; Fly.tsx lo rellena con el acento */
 }
 
 /* ======================= TUNEL 3D (escritorio, con movimiento) ======================= */

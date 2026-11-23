@@ -276,6 +276,32 @@ export default function Fly() {
         return () => { off(); hold.kill() }
       })
 
+      // ------------------------------------------------ movil (con o sin movimiento): geometria de la linea de tiempo
+      // riel recto en el gutter derecho: de la estacion 1 a la 5; un nodo al inicio de cada .st (offsetTop relativo a .fly-pin)
+      mm.add('(max-width: 767px)', () => {
+        const rail = el.querySelector<HTMLElement>('.fly-rail')!
+        const sts = Array.from(el.querySelectorAll<HTMLElement>('.st'))
+        const nodes = Array.from(rail.querySelectorAll<HTMLElement>('.fly-rail-node'))
+        const place = () => {
+          const y0 = sts[0].offsetTop
+          rail.style.top = `${y0}px`
+          rail.style.height = `${sts[N - 1].offsetTop - y0}px`
+          nodes.forEach((n, i) => { n.style.top = `${sts[i].offsetTop - y0}px` })
+        }
+        place()
+        ScrollTrigger.addEventListener('refreshInit', place)
+        ScrollTrigger.addEventListener('refresh', place)
+        // la barra del navegador cambia solo el alto y ScrollTrigger lo ignora en tactil: el padding en vh mueve las estaciones
+        const ro = new ResizeObserver(place)
+        ro.observe(el)
+        return () => {
+          ro.disconnect()
+          ScrollTrigger.removeEventListener('refreshInit', place)
+          ScrollTrigger.removeEventListener('refresh', place)
+          ;[rail, ...nodes].forEach((n) => n.removeAttribute('style'))
+        }
+      })
+
       // ------------------------------------------------ movil con movimiento: apilado + animaciones atadas al scroll (scrub, reversibles)
       mm.add('(max-width: 767px) and (prefers-reduced-motion: no-preference)', () => {
         gsap.set(thread.current!, { clearProps: 'all' })
@@ -283,14 +309,18 @@ export default function Fly() {
         const hold = ScrollTrigger.create({ trigger: el, start: 'top 70%', end: 'top 20%' })
         const off = registerAnchors('dissolve', () => [hold.start, hold.end])
 
-        // C. hilo vertical: se dibuja a lo largo de #recorrido y toma el acento de la estacion visible
-        const vpath = el.querySelector<SVGPathElement>('.fly-thread-v path')!
-        gsap.fromTo(vpath, { drawSVG: '0%' }, { drawSVG: '100%', ease: 'none', scrollTrigger: { trigger: el, start: 'top 60%', end: 'bottom 60%', scrub: true } })
+        // C. linea de tiempo: el riel se rellena hasta la linea del 75 % del viewport; cada nodo pasa de anillo a relleno
+        // con el acento de su estacion al cruzarla (scrub corto, reversible), y el relleno cambia de acento entre nodos
         const sts = Array.from(el.querySelectorAll<HTMLElement>('.st'))
+        const fill = el.querySelector<HTMLElement>('.fly-rail-fill')!
+        const nodes = Array.from(el.querySelectorAll<HTMLElement>('.fly-rail-node'))
         const acc = sts.map((n) => getComputedStyle(n).getPropertyValue('--accent').trim())
+        const bg = getComputedStyle(nodes[0]).backgroundColor
+        const ring = getComputedStyle(nodes[0]).borderColor
+        gsap.fromTo(fill, { scaleY: 0, backgroundColor: acc[0] }, { scaleY: 1, ease: 'none', scrollTrigger: { trigger: sts[0], start: 'top 75%', endTrigger: sts[N - 1], end: 'top 75%', scrub: true } })
         sts.forEach((n, i) => {
-          if (i === 0) return
-          gsap.fromTo(vpath, { stroke: acc[i - 1] }, { stroke: acc[i], ease: 'none', immediateRender: false, scrollTrigger: { trigger: n, start: 'top 85%', end: 'top 45%', scrub: true } })
+          gsap.fromTo(nodes[i], { backgroundColor: bg, borderColor: ring }, { backgroundColor: acc[i], borderColor: acc[i], ease: 'none', scrollTrigger: { trigger: n, start: 'top 80%', end: 'top 70%', scrub: true } })
+          if (i > 0) gsap.fromTo(fill, { backgroundColor: acc[i - 1] }, { backgroundColor: acc[i], ease: 'none', immediateRender: false, scrollTrigger: { trigger: n, start: 'top 80%', end: 'top 70%', scrub: true } })
         })
 
         // A. revelado por estacion: meta, titulo, leccion y texto escalonados (opacidad + 18 px)
@@ -328,6 +358,12 @@ export default function Fly() {
         <svg className="fly-thread-v" viewBox="0 0 400 2400" preserveAspectRatio="none" aria-hidden="true">
           <path d="M40 0 C300 180 60 330 250 520 S380 780 150 980 S40 1240 260 1440 S360 1700 120 1900 S200 2200 330 2400" />
         </svg>
+        <div className="fly-rail" aria-hidden="true">
+          <i className="fly-rail-fill" />
+          {fly.stations.map((s) => (
+            <i key={s.id} className={`fly-rail-node st-${s.id}`} />
+          ))}
+        </div>
         <div className="fly-stage">
           <div className="fly-world" ref={world} aria-hidden="false">
             {dust.map((b, k) => (
